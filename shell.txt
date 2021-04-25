@@ -1,0 +1,21 @@
+source /etc/profile
+
+#获取jenkins上的构建id
+result=$(curl -s http://8.140.184.166:8080/job/Jmeter4.0/lastBuild/buildNumber --user admin123:Wei0925@)
+
+#根据id号在本地tomcat目录下创建一个文件夹
+mkdir /usr/local/software/tomcat-jenkins/webapps/JmeterReport/$result
+
+#把测试报告拷贝到tomcat文件夹下
+cp /usr/local/software/jmeter/demo/report/html/TestReport.html /usr/local/software/tomcat-jenkins/webapps/JmeterReport/TestReport.html
+cp /usr/local/software/jmeter/demo/report/html/TestReport.html /usr/local/software/tomcat-jenkins/webapps/JmeterReport/$result/TestReport.html
+
+#发送钉钉消息
+curl 'https://oapi.dingtalk.com/robot/send?access_token=781a7129713a2e7506f2ba252f89b414b7d288ff619aaea225ca410a761b0607' \
+   -H 'Content-Type: application/json' \
+   -d '{"msgtype": "text", 
+             "text": {
+             "content": "测试完成：
+测试报告地址：http://8.140.184.166:8080/JmeterReport/TestReport.html"
+        }
+      }'
